@@ -1,0 +1,11 @@
+RegionID,RegionName,Country,RegionType,Population,GDP,Description,CreatedAt
+1,Istanbul,Turkey,Urban,15460000,285000.00,"Largest city, cultural and economic hub",2024-01-15 10:00:00
+2,Antalya,Turkey,Coastal,2511700,45000.00,"Mediterranean resort city, tourism capital",2024-01-15 10:00:00
+3,Cappadocia,Turkey,Rural,367000,8500.00,"Historical region famous for rock formations",2024-01-15 10:00:00
+4,Bodrum,Turkey,Coastal,180000,12000.00,"Aegean coastal town, luxury resorts",2024-01-15 10:00:00
+5,Pamukkale,Turkey,Rural,25000,3200.00,"Natural hot springs and travertine terraces",2024-01-15 10:00:00
+6,Izmir,Turkey,Urban,4400000,78000.00,"Third largest city, Aegean coast",2024-01-15 10:00:00
+7,Trabzon,Turkey,Coastal,810000,18000.00,"Black Sea region, historical monasteries",2024-01-15 10:00:00
+8,Uludağ,Turkey,Mountain,45000,2800.00,"Ski resort near Bursa",2024-01-15 10:00:00
+9,Ephesus,Turkey,Rural,12000,1500.00,"Ancient city ruins, archaeological site",2024-01-15 10:00:00
+10,Marmaris,Turkey,Coastal,95000,7500.00,"Beach resort, yacht marina",2024-01-15 10:00:00

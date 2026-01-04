@@ -1,0 +1,18 @@
+ExpenditureID,VisitorID,RegionID,Category,Amount,ExpenditureDate,Description,CreatedAt
+1,1,1,Food,120.00,2024-07-15,"Dinner at seafood restaurant",2024-07-15 20:30:00
+2,1,1,Activities,80.00,2024-07-16,"Bosphorus cruise tour",2024-07-16 14:00:00
+3,1,1,Shopping,250.00,2024-07-18,"Turkish carpets and souvenirs",2024-07-18 16:45:00
+4,1,1,Transportation,45.00,2024-07-20,"Airport transfer",2024-07-20 10:15:00
+5,2,2,Food,95.00,2024-08-02,"Lunch at beach restaurant",2024-08-02 13:30:00
+6,2,2,Activities,150.00,2024-08-03,"Scuba diving excursion",2024-08-03 10:00:00
+7,2,2,Activities,60.00,2024-08-05,"Paragliding experience",2024-08-05 15:30:00
+8,6,1,Food,180.00,2024-08-16,"Fine dining experience",2024-08-16 21:00:00
+9,6,1,Shopping,450.00,2024-08-18,"Jewelry and leather goods",2024-08-18 14:30:00
+10,6,1,Activities,200.00,2024-08-19,"Private guided tour",2024-08-19 09:00:00
+11,6,1,Transportation,120.00,2024-08-21,"Private driver service",2024-08-21 08:00:00
+12,3,3,Activities,180.00,2024-07-11,"Hot air balloon ride Cappadocia",2024-07-11 06:00:00
+13,3,3,Food,75.00,2024-07-12,"Traditional pottery restaurant",2024-07-12 19:00:00
+14,4,4,Activities,90.00,2024-09-12,"Boat tour around Bodrum",2024-09-12 11:00:00
+15,4,4,Shopping,120.00,2024-09-14,"Local handicrafts",2024-09-14 15:00:00
+16,8,2,Food,200.00,2024-07-24,"Multiple meals at resort",2024-07-24 20:00:00
+17,8,2,Activities,250.00,2024-07-26,"Water sports package",2024-07-26 12:00:00
