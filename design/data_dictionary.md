@@ -1,485 +1,225 @@
 # Data Dictionary
 ## ECON485 Project 3: Tourism Revenue & Visitor Trends Database
 
-**Database Name:** tourism_analytics  
+**Database:** `tourism_analytics`  
 **DBMS:** MariaDB 10.6+  
-**Character Set:** UTF-8 (utf8mb4_unicode_ci)  
-**Last Updated:** Week 14, Fall 2025
+**Character Set:** utf8mb4_unicode_ci  
+**Last Updated:** 2026-01-04
 
 ---
 
-## Table of Contents
-
-1. [Regions](#1-regions)
-2. [Hotels](#2-hotels)
-3. [Visitors](#3-visitors)
-4. [RoomTypes](#4-roomtypes)
-5. [Seasons](#5-seasons)
-6. [Bookings](#6-bookings)
-7. [Expenditures](#7-expenditures)
-8. [HotelRoomPricing](#8-hotelroompricing-optional)
-
----
-
-## 1. REGIONS
-
-**Table Name:** `Regions`  
-**Description:** Geographic tourist destinations including cities, provinces, and resort areas  
-**Primary Key:** RegionID  
-**Foreign Keys:** None  
-**Relationships:** One region has many hotels (1:N)
-
-### Columns
-
-| Column Name | Data Type | Null | Key | Default | Description | Example Values |
-|-------------|-----------|------|-----|---------|-------------|----------------|
-| RegionID | INT | NO | PK | AUTO_INCREMENT | Unique identifier for each region | 1, 2, 3 |
-| RegionName | VARCHAR(100) | NO | INDEX | — | Official name of the region | Istanbul, Antalya, Cappadocia |
-| Country | VARCHAR(100) | NO | INDEX | 'Turkey' | Country where region is located | Turkey |
-| RegionType | ENUM | NO | INDEX | — | Classification of region type | Urban, Coastal, Rural, Mountain |
-| Population | INT | YES | — | NULL | Total population of the region | 15460000, 2511700 |
-| GDP | DECIMAL(15,2) | YES | — | NULL | Regional GDP in millions USD | 285000.00, 45000.00 |
-| Description | TEXT | YES | — | NULL | Additional information about the region | 'Largest city, cultural hub' |
-| CreatedAt | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Record creation timestamp | 2025-01-15 10:30:00 |
-
-### Constraints
-
-- **CHECK:** Population >= 0
-- **CHECK:** GDP >= 0
-- **UNIQUE:** None (multiple regions can have same name in different countries)
-
-### Indexes
-
-- `idx_region_name` on RegionName
-- `idx_country` on Country
-- `idx_region_type` on RegionType
-
-### Sample Data
-
-```
-RegionID | RegionName | Country | RegionType | Population | GDP
----------|------------|---------|------------|------------|----------
-1        | Istanbul   | Turkey  | Urban      | 15460000   | 285000.00
-2        | Antalya    | Turkey  | Coastal    | 2511700    | 45000.00
-3        | Cappadocia | Turkey  | Rural      | 367000     | 8500.00
-```
+## Tables
+1. Regions  
+2. Hotels  
+3. Visitors  
+4. RoomTypes  
+5. Seasons  
+6. Bookings  
+7. Expenditures  
+8. HotelRoomPricing (optional)
 
 ---
 
-## 2. HOTELS
+## 1) Regions
+**Purpose:** Geographic destinations (cities, provinces, resort areas)  
+**PK:** RegionID  
+**Relationships:** 1:N with Hotels; 1:N with Expenditures
 
-**Table Name:** `Hotels`  
-**Description:** Accommodation facilities offering rooms to visitors  
-**Primary Key:** HotelID  
-**Foreign Keys:** RegionID → Regions(RegionID)  
-**Relationships:** 
-- Belongs to one region (N:1)
-- Has many bookings (1:N)
+| Column | Type | Null | Key | Default | Description |
+|--------|------|------|-----|---------|-------------|
+| RegionID | INT AUTO_INCREMENT | NO | PK | — | Region identifier |
+| RegionName | VARCHAR(100) | NO | IDX | — | Region name |
+| Country | VARCHAR(100) | NO | IDX | 'Turkey' | Country |
+| RegionType | ENUM('Urban','Coastal','Rural','Mountain') | NO | IDX | — | Region classification |
+| Population | INT | YES | — | NULL | Population (>=0) |
+| GDP | DECIMAL(15,2) | YES | — | NULL | GDP in millions USD (>=0) |
+| Description | TEXT | YES | — | NULL | Notes |
+| CreatedAt | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Created time |
 
-### Columns
-
-| Column Name | Data Type | Null | Key | Default | Description | Example Values |
-|-------------|-----------|------|-----|---------|-------------|----------------|
-| HotelID | INT | NO | PK | AUTO_INCREMENT | Unique hotel identifier | 1, 2, 3 |
-| HotelName | VARCHAR(200) | NO | INDEX | — | Official name of the hotel | Grand Istanbul Palace |
-| RegionID | INT | NO | FK, INDEX | — | Region where hotel is located | 1 (Istanbul) |
-| StarRating | DECIMAL(2,1) | NO | INDEX | — | Hotel quality rating (1.0-5.0) | 5.0, 4.5, 3.5 |
-| TotalRooms | INT | NO | — | — | Total number of available rooms | 250, 180, 120 |
-| Address | VARCHAR(300) | YES | — | NULL | Street address | Sultanahmet Square 15 |
-| City | VARCHAR(100) | YES | — | NULL | City name | Istanbul, Antalya |
-| ZipCode | VARCHAR(20) | YES | — | NULL | Postal code | 34122, 07100 |
-| ContactPhone | VARCHAR(50) | YES | — | NULL | Contact phone number | +90-212-555-0001 |
-| ContactEmail | VARCHAR(100) | YES | — | NULL | Contact email address | info@hotel.com |
-| CreatedAt | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Record creation timestamp | 2025-01-15 10:30:00 |
-
-### Constraints
-
-- **CHECK:** StarRating BETWEEN 1.0 AND 5.0
-- **CHECK:** TotalRooms > 0
-- **CHECK:** ContactEmail LIKE '%@%.%' (if provided)
-- **FOREIGN KEY:** RegionID REFERENCES Regions(RegionID) ON DELETE RESTRICT ON UPDATE CASCADE
-
-### Indexes
-
-- `idx_hotel_region` on RegionID
-- `idx_hotel_rating` on StarRating
-- `idx_hotel_name` on HotelName
-
-### Sample Data
-
-```
-HotelID | HotelName              | RegionID | StarRating | TotalRooms | City
---------|------------------------|----------|------------|------------|----------
-1       | Grand Istanbul Palace  | 1        | 5.0        | 250        | Istanbul
-2       | Bosphorus View Hotel   | 1        | 4.5        | 180        | Istanbul
-4       | Antalya Beach Resort   | 2        | 5.0        | 400        | Antalya
-```
+Indexes: idx_region_name, idx_country, idx_region_type  
+Checks: Population >= 0; GDP >= 0
 
 ---
 
-## 3. VISITORS
+## 2) Hotels
+**Purpose:** Accommodation facilities  
+**PK:** HotelID  
+**FKs:** RegionID → Regions.RegionID  
+**Relationships:** N:1 Regions; 1:N Bookings; 1:N HotelRoomPricing
 
-**Table Name:** `Visitors`  
-**Description:** Individual tourists with demographic information  
-**Primary Key:** VisitorID  
-**Foreign Keys:** None  
-**Relationships:** 
-- Has many bookings (1:N)
-- Has many expenditures (1:N)
+| Column | Type | Null | Key | Default | Description |
+|--------|------|------|-----|---------|-------------|
+| HotelID | INT AUTO_INCREMENT | NO | PK | — | Hotel identifier |
+| HotelName | VARCHAR(200) | NO | IDX | — | Official hotel name |
+| RegionID | INT | NO | FK, IDX | — | Region |
+| StarRating | DECIMAL(2,1) | NO | IDX | — | Rating 1.0–5.0 |
+| TotalRooms | INT | NO | — | — | Total rooms (>0) |
+| Address | VARCHAR(300) | YES | — | NULL | Street address |
+| City | VARCHAR(100) | YES | — | NULL | City |
+| ZipCode | VARCHAR(20) | YES | — | NULL | Postal code |
+| ContactPhone | VARCHAR(50) | YES | — | NULL | Phone |
+| ContactEmail | VARCHAR(100) | YES | — | NULL | Email |
+| CreatedAt | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Created time |
 
-### Columns
-
-| Column Name | Data Type | Null | Key | Default | Description | Example Values |
-|-------------|-----------|------|-----|---------|-------------|----------------|
-| VisitorID | INT | NO | PK | AUTO_INCREMENT | Unique visitor identifier | 1, 2, 3 |
-| FirstName | VARCHAR(100) | NO | — | — | Visitor's first name | Ahmet, John, Emma |
-| LastName | VARCHAR(100) | NO | INDEX | — | Visitor's last name | Yılmaz, Smith, Johnson |
-| Country | VARCHAR(100) | NO | INDEX | — | Visitor's country of origin | Turkey, United Kingdom, Germany |
-| Age | INT | YES | — | NULL | Visitor's age in years | 35, 28, 45 |
-| Gender | ENUM | YES | — | NULL | Visitor's gender | Male, Female, Other, PreferNotToSay |
-| VisitorType | ENUM | NO | INDEX | — | Classification of visitor | Domestic, International |
-| Email | VARCHAR(100) | YES | — | NULL | Contact email | visitor@email.com |
-| Phone | VARCHAR(50) | YES | — | NULL | Contact phone | +90-532-123-4567 |
-| RegisteredDate | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Account registration date | 2024-07-10 14:20:00 |
-
-### Constraints
-
-- **CHECK:** Age BETWEEN 0 AND 120 (if provided)
-- **CHECK:** Email LIKE '%@%.%' (if provided)
-
-### Indexes
-
-- `idx_visitor_country` on Country
-- `idx_visitor_type` on VisitorType
-- `idx_visitor_name` on (LastName, FirstName)
-
-### Sample Data
-
-```
-VisitorID | FirstName | LastName | Country        | Age | VisitorType   | Email
-----------|-----------|----------|----------------|-----|---------------|--------------------
-1         | Ahmet     | Yılmaz   | Turkey         | 35  | Domestic      | ahmet.y@email.com
-6         | John      | Smith    | United Kingdom | 45  | International | john.s@email.co.uk
-8         | Hans      | Mueller  | Germany        | 52  | International | hans.m@email.de
-```
+Indexes: idx_hotel_region, idx_hotel_rating, idx_hotel_name  
+Checks: StarRating between 1.0 and 5.0; TotalRooms > 0; ContactEmail LIKE '%@%.%'  
+FK: RegionID ON DELETE RESTRICT ON UPDATE CASCADE
 
 ---
 
-## 4. ROOMTYPES
+## 3) Visitors
+**Purpose:** Tourist records with demographics  
+**PK:** VisitorID  
+**Relationships:** 1:N Bookings; 1:N Expenditures
 
-**Table Name:** `RoomTypes`  
-**Description:** Categorization of hotel room types across all properties  
-**Primary Key:** RoomTypeID  
-**Foreign Keys:** None  
-**Relationships:** One room type used in many bookings (1:N)
+| Column | Type | Null | Key | Default | Description |
+|--------|------|------|-----|---------|-------------|
+| VisitorID | INT AUTO_INCREMENT | NO | PK | — | Visitor identifier |
+| FirstName | VARCHAR(100) | NO | — | — | First name |
+| LastName | VARCHAR(100) | NO | IDX | — | Last name |
+| Country | VARCHAR(100) | NO | IDX | — | Country of origin |
+| Age | INT | YES | — | NULL | Age (0–120) |
+| Gender | ENUM('Male','Female','Other','PreferNotToSay') | YES | — | NULL | Gender |
+| VisitorType | ENUM('Domestic','International') | NO | IDX | — | Visitor classification |
+| Email | VARCHAR(100) | YES | — | NULL | Email |
+| Phone | VARCHAR(50) | YES | — | NULL | Phone |
+| RegisteredDate | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Registered time |
 
-### Columns
-
-| Column Name | Data Type | Null | Key | Default | Description | Example Values |
-|-------------|-----------|------|-----|---------|-------------|----------------|
-| RoomTypeID | INT | NO | PK | AUTO_INCREMENT | Unique room type identifier | 1, 2, 3 |
-| TypeName | VARCHAR(50) | NO | UNIQUE | — | Name of room category | Standard, Deluxe, Suite |
-| BaseCapacity | INT | NO | — | — | Maximum occupancy | 2, 4, 6 |
-| Description | TEXT | YES | — | NULL | Detailed room description | 'Basic room with essential amenities' |
-
-### Constraints
-
-- **CHECK:** BaseCapacity BETWEEN 1 AND 10
-- **UNIQUE:** TypeName (each type name appears once)
-
-### Indexes
-
-None (small lookup table)
-
-### Sample Data
-
-```
-RoomTypeID | TypeName     | BaseCapacity | Description
------------|--------------|--------------|----------------------------------
-1          | Standard     | 2            | Basic room with essential amenities
-2          | Deluxe       | 2            | Enhanced room with better view
-3          | Suite        | 4            | Large room with separate living area
-```
+Indexes: idx_visitor_country, idx_visitor_type, idx_visitor_name (LastName, FirstName)  
+Checks: Age between 0 and 120; Email LIKE '%@%.%' if provided
 
 ---
 
-## 5. SEASONS
+## 4) RoomTypes
+**Purpose:** Standard room categories  
+**PK:** RoomTypeID  
+**Relationships:** 1:N Bookings; 1:N HotelRoomPricing
 
-**Table Name:** `Seasons`  
-**Description:** Temporal classifications for seasonal tourism analysis  
-**Primary Key:** SeasonID  
-**Foreign Keys:** None  
-**Relationships:** Used to classify bookings by date (derived relationship)
+| Column | Type | Null | Key | Default | Description |
+|--------|------|------|-----|---------|-------------|
+| RoomTypeID | INT AUTO_INCREMENT | NO | PK | — | Room type identifier |
+| TypeName | VARCHAR(50) | NO | UNIQUE | — | Category name |
+| BaseCapacity | INT | NO | — | — | Max occupancy (1–10) |
+| Description | TEXT | YES | — | NULL | Details |
 
-### Columns
-
-| Column Name | Data Type | Null | Key | Default | Description | Example Values |
-|-------------|-----------|------|-----|---------|-------------|----------------|
-| SeasonID | INT | NO | PK | AUTO_INCREMENT | Unique season identifier | 1, 2, 3 |
-| SeasonName | ENUM | NO | — | — | Season category | Peak, Shoulder, Off-Season |
-| StartMonth | INT | NO | — | — | Starting month (1-12) | 6, 4, 2 |
-| EndMonth | INT | NO | — | — | Ending month (1-12) | 8, 5, 3 |
-| YearApplicable | INT | YES | — | NULL | Year for this season definition | 2024, 2025 |
-| Description | TEXT | YES | — | NULL | Additional season details | 'Summer high season' |
-
-### Constraints
-
-- **CHECK:** StartMonth BETWEEN 1 AND 12
-- **CHECK:** EndMonth BETWEEN 1 AND 12
-- **CHECK:** YearApplicable >= 2020
-- **UNIQUE:** (SeasonName, YearApplicable)
-
-### Indexes
-
-None (small reference table)
-
-### Sample Data
-
-```
-SeasonID | SeasonName | StartMonth | EndMonth | YearApplicable | Description
----------|------------|------------|----------|----------------|------------------------
-1        | Peak       | 6          | 8        | 2024           | Summer high season
-2        | Peak       | 12         | 1        | 2024           | Winter holidays
-3        | Shoulder   | 4          | 5        | 2024           | Spring season
-```
+Checks: BaseCapacity > 0 and <= 10
 
 ---
 
-## 6. BOOKINGS
+## 5) Seasons
+**Purpose:** Seasonal periods for analytics  
+**PK:** SeasonID  
+**Relationships:** 1:N HotelRoomPricing; derived link to Bookings by date
 
-**Table Name:** `Bookings`  
-**Description:** Reservation records linking visitors to hotels  
-**Primary Key:** BookingID  
-**Foreign Keys:** 
-- VisitorID → Visitors(VisitorID)
-- HotelID → Hotels(HotelID)
-- RoomTypeID → RoomTypes(RoomTypeID)
+| Column | Type | Null | Key | Default | Description |
+|--------|------|------|-----|---------|-------------|
+| SeasonID | INT AUTO_INCREMENT | NO | PK | — | Season identifier |
+| SeasonName | ENUM('Peak','Shoulder','Off-Season') | NO | — | — | Season label |
+| StartMonth | INT | NO | — | — | Start month (1–12) |
+| EndMonth | INT | NO | — | — | End month (1–12) |
+| YearApplicable | INT | YES | — | NULL | Year (>=2020) |
+| Description | TEXT | YES | — | NULL | Notes |
 
-**Relationships:**
-- Belongs to one visitor (N:1)
-- Belongs to one hotel (N:1)
-- Uses one room type (N:1)
-
-### Columns
-
-| Column Name | Data Type | Null | Key | Default | Description | Example Values |
-|-------------|-----------|------|-----|---------|-------------|----------------|
-| BookingID | INT | NO | PK | AUTO_INCREMENT | Unique booking identifier | 1, 2, 3 |
-| VisitorID | INT | NO | FK, INDEX | — | Visitor who made booking | 1, 6, 8 |
-| HotelID | INT | NO | FK, INDEX | — | Hotel where booking is made | 1, 4, 7 |
-| RoomTypeID | INT | NO | FK | — | Type of room booked | 1, 2, 3 |
-| CheckInDate | DATE | NO | INDEX | — | Arrival date | 2024-07-15, 2025-06-20 |
-| CheckOutDate | DATE | NO | INDEX | — | Departure date | 2024-07-20, 2025-06-25 |
-| NumberOfGuests | INT | NO | — | 1 | Number of people in booking | 1, 2, 4 |
-| PricePerNight | DECIMAL(10,2) | NO | — | — | Room rate per night | 350.00, 280.00 |
-| TotalCost | DECIMAL(10,2) | NO | — | — | Total booking cost (denormalized) | 1750.00, 1680.00 |
-| BookingStatus | ENUM | NO | INDEX | 'Confirmed' | Current status | Confirmed, Cancelled, Completed |
-| BookingDate | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | When booking was created | 2024-07-01 10:30:00 |
-
-### Constraints
-
-- **CHECK:** CheckOutDate > CheckInDate
-- **CHECK:** PricePerNight > 0
-- **CHECK:** TotalCost > 0
-- **CHECK:** NumberOfGuests BETWEEN 1 AND 10
-- **FOREIGN KEY:** All FKs with RESTRICT on DELETE, CASCADE on UPDATE
-- **BUSINESS RULE:** TotalCost = PricePerNight × (CheckOutDate - CheckInDate)
-
-### Indexes
-
-- `idx_booking_visitor` on VisitorID
-- `idx_booking_hotel` on HotelID
-- `idx_booking_dates` on (CheckInDate, CheckOutDate)
-- `idx_booking_status` on BookingStatus
-- `idx_booking_hotel_dates` on (HotelID, CheckInDate)
-
-### Denormalization Note
-
-**TotalCost** is intentionally denormalized (violates 3NF) for performance and historical accuracy. See normalization_analysis.md for justification.
-
-### Sample Data
-
-```
-BookingID | VisitorID | HotelID | CheckInDate | CheckOutDate | PricePerNight | TotalCost | Status
-----------|-----------|---------|-------------|--------------|---------------|-----------|----------
-1         | 1         | 1       | 2024-07-15  | 2024-07-20   | 350.00        | 1750.00   | Completed
-2         | 2         | 4       | 2024-08-01  | 2024-08-07   | 280.00        | 1680.00   | Completed
-11        | 11        | 1       | 2025-06-15  | 2025-06-20   | 380.00        | 1900.00   | Confirmed
-```
+Checks: StartMonth 1–12; EndMonth 1–12; YearApplicable >= 2020  
+Unique: (SeasonName, YearApplicable)
 
 ---
 
-## 7. EXPENDITURES
+## 6) Bookings
+**Purpose:** Reservations linking visitors, hotels, and room types  
+**PK:** BookingID  
+**FKs:** VisitorID → Visitors; HotelID → Hotels; RoomTypeID → RoomTypes  
+**Relationships:** N:1 Visitors; N:1 Hotels; N:1 RoomTypes
 
-**Table Name:** `Expenditures`  
-**Description:** Detailed spending records beyond accommodation costs  
-**Primary Key:** ExpenditureID  
-**Foreign Keys:**
-- VisitorID → Visitors(VisitorID)
-- RegionID → Regions(RegionID)
+| Column | Type | Null | Key | Default | Description |
+|--------|------|------|-----|---------|-------------|
+| BookingID | INT AUTO_INCREMENT | NO | PK | — | Booking identifier |
+| VisitorID | INT | NO | FK, IDX | — | Visitor |
+| HotelID | INT | NO | FK, IDX | — | Hotel |
+| RoomTypeID | INT | NO | FK | — | Room type |
+| CheckInDate | DATE | NO | IDX | — | Arrival date |
+| CheckOutDate | DATE | NO | IDX | — | Departure date |
+| NumberOfGuests | INT | NO | — | 1 | Guests (1–10) |
+| PricePerNight | DECIMAL(10,2) | NO | — | — | Nightly rate |
+| TotalCost | DECIMAL(10,2) | NO | — | — | Denormalized total |
+| BookingStatus | ENUM('Confirmed','Cancelled','Completed') | NO | IDX | 'Confirmed' | Status |
+| BookingDate | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Created time |
 
-**Relationships:**
-- Belongs to one visitor (N:1)
-- Occurs in one region (N:1)
-
-### Columns
-
-| Column Name | Data Type | Null | Key | Default | Description | Example Values |
-|-------------|-----------|------|-----|---------|-------------|----------------|
-| ExpenditureID | INT | NO | PK | AUTO_INCREMENT | Unique expenditure identifier | 1, 2, 3 |
-| VisitorID | INT | NO | FK, INDEX | — | Visitor who spent money | 1, 6, 8 |
-| RegionID | INT | NO | FK, INDEX | — | Region where spending occurred | 1, 2, 3 |
-| Category | ENUM | NO | INDEX | — | Type of spending | Food, Activities, Shopping, Transportation, Other |
-| Amount | DECIMAL(10,2) | NO | — | — | Amount spent in local currency | 120.00, 80.00, 250.00 |
-| ExpenditureDate | DATE | NO | INDEX | — | Date of transaction | 2024-07-15, 2024-08-02 |
-| Description | VARCHAR(300) | YES | — | NULL | Details about expenditure | 'Dinner at seafood restaurant' |
-| CreatedAt | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Record creation timestamp | 2024-07-15 20:30:00 |
-
-### Constraints
-
-- **CHECK:** Amount > 0
-- **FOREIGN KEY:** All FKs with RESTRICT on DELETE, CASCADE on UPDATE
-
-### Indexes
-
-- `idx_expenditure_visitor` on VisitorID
-- `idx_expenditure_region` on RegionID
-- `idx_expenditure_category` on Category
-- `idx_expenditure_date` on ExpenditureDate
-- `idx_expenditure_region_date` on (RegionID, ExpenditureDate)
-
-### Sample Data
-
-```
-ExpenditureID | VisitorID | RegionID | Category       | Amount  | ExpenditureDate | Description
---------------|-----------|----------|----------------|---------|-----------------|---------------------------
-1             | 1         | 1        | Food           | 120.00  | 2024-07-15      | Dinner at seafood restaurant
-2             | 1         | 1        | Activities     | 80.00   | 2024-07-16      | Bosphorus cruise tour
-3             | 1         | 1        | Shopping       | 250.00  | 2024-07-18      | Turkish carpets
-```
+Checks: CheckOutDate > CheckInDate; PricePerNight > 0; TotalCost > 0; NumberOfGuests 1–10  
+Indexes: idx_booking_visitor, idx_booking_hotel, idx_booking_dates, idx_booking_status, idx_booking_hotel_dates  
+Business note: TotalCost intentionally denormalized for performance/history.
 
 ---
 
-## 8. HOTELROOMPRICING (Optional)
+## 7) Expenditures
+**Purpose:** Non-accommodation spending by visitors  
+**PK:** ExpenditureID  
+**FKs:** VisitorID → Visitors; RegionID → Regions  
+**Relationships:** N:1 Visitors; N:1 Regions
 
-**Table Name:** `HotelRoomPricing`  
-**Description:** Dynamic pricing based on hotel, room type, and season (optional enhancement)  
-**Primary Key:** PricingID  
-**Foreign Keys:**
-- HotelID → Hotels(HotelID)
-- RoomTypeID → RoomTypes(RoomTypeID)
-- SeasonID → Seasons(SeasonID)
+| Column | Type | Null | Key | Default | Description |
+|--------|------|------|-----|---------|-------------|
+| ExpenditureID | INT AUTO_INCREMENT | NO | PK | — | Expenditure identifier |
+| VisitorID | INT | NO | FK, IDX | — | Visitor |
+| RegionID | INT | NO | FK, IDX | — | Region of spend |
+| Category | ENUM('Accommodation','Food','Activities','Shopping','Transportation','Other') | NO | IDX | — | Spend category |
+| Amount | DECIMAL(10,2) | NO | — | — | Amount (>0) |
+| ExpenditureDate | DATE | NO | IDX | — | Spend date |
+| Description | VARCHAR(300) | YES | — | NULL | Notes |
+| CreatedAt | TIMESTAMP | NO | — | CURRENT_TIMESTAMP | Created time |
 
-**Relationships:**
-- Belongs to one hotel (N:1)
-- Belongs to one room type (N:1)
-- Belongs to one season (N:1)
-
-### Columns
-
-| Column Name | Data Type | Null | Key | Default | Description | Example Values |
-|-------------|-----------|------|-----|---------|-------------|----------------|
-| PricingID | INT | NO | PK | AUTO_INCREMENT | Unique pricing record identifier | 1, 2, 3 |
-| HotelID | INT | NO | FK, INDEX | — | Hotel offering this pricing | 1, 4, 7 |
-| RoomTypeID | INT | NO | FK | — | Room type being priced | 1, 2, 3 |
-| SeasonID | INT | NO | FK, INDEX | — | Season when price applies | 1, 3, 5 |
-| PricePerNight | DECIMAL(10,2) | NO | — | — | Room rate for this combination | 350.00, 420.00 |
-| AvailableRooms | INT | NO | — | — | Number of rooms available | 50, 30, 100 |
-
-### Constraints
-
-- **CHECK:** PricePerNight > 0
-- **CHECK:** AvailableRooms >= 0
-- **UNIQUE:** (HotelID, RoomTypeID, SeasonID)
-- **FOREIGN KEY:** All FKs with CASCADE on DELETE and UPDATE
-
-### Indexes
-
-- `idx_pricing_hotel` on HotelID
-- `idx_pricing_season` on SeasonID
-
-### Sample Data
-
-```
-PricingID | HotelID | RoomTypeID | SeasonID | PricePerNight | AvailableRooms
-----------|---------|------------|----------|---------------|----------------
-1         | 1       | 1          | 1        | 320.00        | 80
-2         | 1       | 1          | 3        | 220.00        | 100
-3         | 1       | 2          | 1        | 450.00        | 50
-```
+Checks: Amount > 0  
+Indexes: idx_expenditure_visitor, idx_expenditure_region, idx_expenditure_category, idx_expenditure_date, idx_expenditure_region_date
 
 ---
 
-## Entity Relationship Summary
+## 8) HotelRoomPricing (Optional)
+**Purpose:** Seasonal pricing per hotel-room-type combination  
+**PK:** PricingID  
+**FKs:** HotelID → Hotels; RoomTypeID → RoomTypes; SeasonID → Seasons  
+**Relationships:** N:1 Hotels; N:1 RoomTypes; N:1 Seasons
 
+| Column | Type | Null | Key | Default | Description |
+|--------|------|------|-----|---------|-------------|
+| PricingID | INT AUTO_INCREMENT | NO | PK | — | Pricing identifier |
+| HotelID | INT | NO | FK, IDX | — | Hotel |
+| RoomTypeID | INT | NO | FK | — | Room type |
+| SeasonID | INT | NO | FK, IDX | — | Season |
+| PricePerNight | DECIMAL(10,2) | NO | — | — | Price (>0) |
+| AvailableRooms | INT | NO | — | — | Rooms available (>=0) |
+
+Unique: (HotelID, RoomTypeID, SeasonID)  
+Checks: PricePerNight > 0; AvailableRooms >= 0  
+FKs: CASCADE on DELETE/UPDATE
+
+---
+
+## Entity Relationships (summary)
 ```
-Regions (1) ----< Hotels (N)
-Hotels (1) ----< Bookings (N)
-Visitors (1) ----< Bookings (N)
-RoomTypes (1) ----< Bookings (N)
-Visitors (1) ----< Expenditures (N)
-Regions (1) ----< Expenditures (N)
+Regions 1 --- N Hotels
+Regions 1 --- N Expenditures
+Visitors 1 --- N Bookings
+Visitors 1 --- N Expenditures
+Hotels 1 --- N Bookings
+RoomTypes 1 --- N Bookings
 
 Optional:
-Hotels (1) ----< HotelRoomPricing (N)
-RoomTypes (1) ----< HotelRoomPricing (N)
-Seasons (1) ----< HotelRoomPricing (N)
+Hotels 1 --- N HotelRoomPricing
+RoomTypes 1 --- N HotelRoomPricing
+Seasons 1 --- N HotelRoomPricing
 
 Derived:
-Seasons (1) ~~~< Bookings (N) [based on CheckInDate]
+Seasons ~~~ Bookings (via CheckInDate)
 ```
 
 ---
 
-## Database Statistics
-
-| Table | Columns | Sample Records | Primary Key | Foreign Keys | Indexes |
-|-------|---------|----------------|-------------|--------------|---------|
-| Regions | 8 | 10 | RegionID | 0 | 3 |
-| Hotels | 11 | 15 | HotelID | 1 | 3 |
-| Visitors | 10 | 16 | VisitorID | 0 | 3 |
-| RoomTypes | 4 | 5 | RoomTypeID | 0 | 0 |
-| Seasons | 6 | 8 | SeasonID | 0 | 0 |
-| Bookings | 11 | 16 | BookingID | 3 | 5 |
-| Expenditures | 8 | 17 | ExpenditureID | 2 | 5 |
-| HotelRoomPricing | 6 | 0 (optional) | PricingID | 3 | 2 |
-
-**Total Tables:** 8 (7 core + 1 optional)  
-**Total Sample Records:** 87  
-**Total Indexes:** 21
+## Notes & Alignment with Data
+- CSV files in `/data` are external reference exports; they are not directly loaded into these normalized tables without transformation.  
+- Sample counts from earlier synthetic data are retired; load scripts should respect the constraints above.  
+- Monetary columns use dot (`.`) as decimal separator; ensure locale handling during imports.
 
 ---
 
-## Naming Conventions
-
-- **Tables:** PascalCase, plural nouns (Regions, Hotels, Bookings)
-- **Columns:** PascalCase (RegionID, CheckInDate, TotalCost)
-- **Primary Keys:** TableNameID (RegionID, HotelID)
-- **Foreign Keys:** Same name as referenced PK
-- **Indexes:** idx_tablename_columnname
-
----
-
-## Data Quality Rules
-
-1. **Referential Integrity:** All foreign keys enforced with constraints
-2. **Date Validation:** CheckOutDate must always be after CheckInDate
-3. **Positive Values:** All monetary amounts and counts must be > 0
-4. **Email Format:** Basic validation with LIKE '%@%.%'
-5. **Enum Constraints:** Gender, VisitorType, BookingStatus, Category limited to predefined values
-6. **Historical Accuracy:** TotalCost denormalized to preserve booking cost at time of reservation
-
----
-
-## Performance Considerations
-
-- **High-Traffic Tables:** Bookings, Expenditures (most queries target these)
-- **Index Strategy:** Composite indexes on (HotelID, CheckInDate) for occupancy queries
-- **View Optimization:** 4 materialized views created for common dashboard queries
-- **Query Patterns:** Most analytics involve date ranges and regional aggregations
-
----
-
-**Document Version:** 1.0  
-**Last Updated:** Week 14, Fall 2025  
-**Maintained By:** Team 3 - Data Analyst
+**Maintained by:** Team 3 — Data Analyst  
+**Document Version:** 2.0
